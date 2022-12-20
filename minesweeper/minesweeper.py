@@ -5,18 +5,33 @@ from blessed import Terminal
 def displayNakedBoard():
     for row in range(0, len(board)):
         for col in range(0, len(board)):
-            print(f"{board[row][col]}", end=" ")
+            print(f"\033[4m{board[row][col]}\033[0m",  end="\033[4m" + "|" + "\033[0m")
         print("")
 
 def displayBoard():
     test = " "
+    print("______________________________")
     for row in range(0, len(board)):
         for col in range(0, len(board)):
             if boardDisplay[row][col] == hiddenCell:
                 print("\033[4m" + " " + "\033[0m", end="\033[4m" + " |" + "\033[0m")
             else:
-                print(f"{txtUnderline.join(boardDisplay[row][col])}", end=" |")
+                print(f"\033[4m{boardDisplay[row][col]}\033[0m", end="\033[4m" + " |" + "\033[0m")
         print("")
+
+def checkAdjCells(row, col):
+    adjMines = 0
+    r = row - 1
+    while r <= row+1:
+        if r>=0 and r <5:
+            c = col - 1
+            while c <= col + 1:
+                if c>=0 and c<5:
+                    adjMines += board[r][c]
+                c += 1
+        r += 1
+    return adjMines
+
 txtUnderline = "\033["
 endUnderline = "\033[0m"
 bomb = 1
@@ -71,3 +86,19 @@ while mines < numOfMines:
 
 displayNakedBoard()
 displayBoard()
+
+picks = 0
+
+while picks < (100-numOfMines):
+    print("example: '0,0'")
+    cell = input("pick a cell:")
+    splitCell = cell.split(',')
+    row = int(splitCell[0])
+    col = int(splitCell[1])
+    if board[row][col] == bomb:
+        print("you lost!")
+        displayNakedBoard()
+    else:
+        boardDisplay[row][col] = checkAdjCells(row,col)
+        displayBoard()
+    
