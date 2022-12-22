@@ -4,22 +4,24 @@ import random
 def displayNakedBoard():
     for row in range(0, len(board)):
         for col in range(0, len(board)):
+            #ANSI code to add underlines for a prettier grid
             print(f"\033[4m{board[row][col]}\033[0m", end="\033[4m" + " |" + "\033[0m")
         print("")
-            
-        """print(f"\033[4m{board[row][col]}\033[0m",  end="\033[4m" + "|" + "\033[0m")
-        print("")
-        """
 
 def displayBoard():
-    print("______________________________")
-    for row in range(0, len(board)):
-        for col in range(0, len(board)):
+    print("  ", end="") 
+    for col in range(0, 10):  # Print the column index
+        print(f"\033[4m {col} \033[0m", end="")
+    print("") 
+    for row in range(0, 10):  # Print the row index
+        print(f"{row}|", end="")
+        for col in range(0, 10):
             if boardDisplay[row][col] == hiddenCell:
                 print("\033[4m" + " " + "\033[0m", end="\033[4m" + " |" + "\033[0m")
             else:
                 print(f"\033[4m{boardDisplay[row][col]}\033[0m", end="\033[4m" + " |" + "\033[0m")
         print("")
+
 
 def checkAdjCells(row,col):
     adjMines = 0
@@ -118,7 +120,7 @@ displayBoard()
 picks = 0
 
 while picks < (100-numOfMines):
-    flag = input("place a flag?(y/n): ")
+    flag = input("place/remove flag?(y/n): ")
     if flag == 'y':
         cell = input("pick a cell:")
         splitCell = cell.split(',')
