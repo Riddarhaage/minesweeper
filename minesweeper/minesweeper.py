@@ -1,15 +1,17 @@
 #%%
 import random
-from blessed import Terminal
 
 def displayNakedBoard():
     for row in range(0, len(board)):
         for col in range(0, len(board)):
-            print(f"\033[4m{board[row][col]}\033[0m",  end="\033[4m" + "|" + "\033[0m")
+            print(f"\033[4m{board[row][col]}\033[0m", end="\033[4m" + " |" + "\033[0m")
         print("")
+            
+        """print(f"\033[4m{board[row][col]}\033[0m",  end="\033[4m" + "|" + "\033[0m")
+        print("")
+        """
 
 def displayBoard():
-    test = " "
     print("______________________________")
     for row in range(0, len(board)):
         for col in range(0, len(board)):
@@ -23,35 +25,38 @@ def checkAdjCells(row,col):
     adjMines = 0
     r = row - 1
     while r <= row+1:
-        if r>=0 and r <5:
+        if r>=0 and r <10:
             c = col - 1
             while c <= col + 1:
-                if c>=0 and c<5:
+                if c>=0 and c<10:
                     adjMines += board[r][c] # 1 added to adjMines since mines = 1 on the board
                 c += 1
         r += 1
     return adjMines
 
 def openAdjEmpyCell(row, col):
-    r = row - 1
-    while r <= row+len(board):
-        if r>=0 and r <len(board):
-            c = col - 1
-            while c <= col + len(board):
-                if c>=0 and c<len(board):
-                    if board[r][c] == 0:
-                       _ = boardDisplay[r][c] = 0
-                    elif board[r][c] != 0:
-                        test = checkAdjCells(row,col)
-                        return test
-                c += 1
-        r += 1
-    return _
+    cells = [(row, col)]
+    offsets = ((-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1))
+        
+    while len(cells) > 0:
+        cell = cells.pop()
+        for offset in offsets:
+            row = offset[0] + cell[0]
+            col = offset[1] + cell[1]
+            if((row>=0 and row<=9) and (col>=0 and col<=9)):
+                if((boardDisplay[row][col]==hiddenCell) and (board[row][col]==empty)):
+                    boardDisplay[row][col] = checkAdjCells(row,col)
 
-txtUnderline = "\033["
-endUnderline = "\033[0m"
+                    if checkAdjCells(row,col) == empty and (row,col) not in cells:
+                        cells.append((row,col))
+                    else:
+                        boardDisplay[row][col] = checkAdjCells(row,col)
+    #displayBoard()
+    
+
 bomb = 1
-hiddenCell = -1  
+hiddenCell = -1
+empty = 0
         #row and cols 10x10 grid
         #not visible to user
 board = [
@@ -116,6 +121,6 @@ while picks < (100-numOfMines):
         displayNakedBoard()
     else:
         boardDisplay[row][col] = openAdjEmpyCell(row, col)
-        boardDisplay[row][col] = checkAdjCells(row,col)
+        boardDisplay[row][col] = checkAdjCells(row, col)
         displayBoard()
     
