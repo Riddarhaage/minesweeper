@@ -51,7 +51,14 @@ def openAdjEmpyCell(row, col):
                         cells.append((row,col))
                     else:
                         boardDisplay[row][col] = checkAdjCells(row,col)
-    #displayBoard()
+
+def setFlag(row, col):
+    if boardDisplay[row][col] == "F":
+        boardDisplay[row][col] = hiddenCell
+        
+    else:
+        boardDisplay[row][col] = "F"
+
     
 
 bomb = 1
@@ -111,16 +118,27 @@ displayBoard()
 picks = 0
 
 while picks < (100-numOfMines):
-    print("example: '0,0'")
-    cell = input("pick a cell:")
-    splitCell = cell.split(',')
-    row = int(splitCell[0])
-    col = int(splitCell[1])
-    if board[row][col] == bomb:
-        print("you lost!")
-        displayNakedBoard()
-    else:
-        boardDisplay[row][col] = openAdjEmpyCell(row, col)
-        boardDisplay[row][col] = checkAdjCells(row, col)
+    flag = input("place a flag?(y/n): ")
+    if flag == 'y':
+        cell = input("pick a cell:")
+        splitCell = cell.split(',')
+        row = int(splitCell[0])
+        col = int(splitCell[1])
+        setFlag(row,col)
         displayBoard()
+    elif flag == 'n':
+        cell = input("pick a cell:")
+        splitCell = cell.split(',')
+        row = int(splitCell[0])
+        col = int(splitCell[1])
+        if boardDisplay[row][col] == 'F':
+            print("Can't open a flagged cell!")
+        elif board[row][col] == bomb:
+            print("you lost!")
+            displayNakedBoard()
+            break
+        else:
+            boardDisplay[row][col] = openAdjEmpyCell(row, col)
+            boardDisplay[row][col] = checkAdjCells(row, col)
+            displayBoard()
     
