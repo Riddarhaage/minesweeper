@@ -1,5 +1,6 @@
 #%%
 import random
+import time
 
 def displayNakedBoard():
     value_symbol_map = {
@@ -76,6 +77,13 @@ def setFlag(row, col):
 MINE = 1
 HIDDENCELL = -1
 EMPTY = 0
+REDTEXT = '\u001b[31m'
+GREENTEXT = '\u001b[32m'
+YELLOWTEXT = '\u001b[33m'
+BLUETEXT =  '\u001b[34m'
+MAGTEXT = '\u001b[35m'
+CYANTEXT = '\u001b[36m'
+RESETTEXT = '\u001b[0m'
         #row and cols 10x10 grid
         #not visible to user
 board = [
@@ -103,17 +111,21 @@ boardDisplay = [
          [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
          [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                                         ]
+numOfMines = None
+while numOfMines == None:
+    try:
+        numOfMines = int(input("Amount of mines: "))
 
-
-numOfMines = int(input("Amount of mines: "))
-if numOfMines == 0:
-    numOfMines = 1
-    print("not enought mines to make things interesting!")
-    print(f"{numOfMines} mines added to the board")
-if numOfMines > 75:
-    numOfMines = 75
-    print("Woah! that's way too many mines!")
-    print(f"Luckily I only added {numOfMines} mines to the board!")
+        if numOfMines == 0:
+            numOfMines = 1
+            print("not enought mines to make things interesting!")
+            print(f"{numOfMines} mines added to the board")
+        if numOfMines > 75:
+            numOfMines = 75
+            print("Woah! that's way too many mines!")
+            print(f"Luckily I only added {numOfMines} mines to the board!")
+    except:
+        print(f"{REDTEXT}ERROR:{RESETTEXT} not a valid input!")
 
 mines = 0
 while mines < numOfMines:
@@ -146,14 +158,16 @@ while complete:
             row = int(splitCell[0])
             col = int(splitCell[1])
         except:
-            print("\u001b[31mERROR:\u001b[37m.Try to enter a valid row & column seperated by a comma")
+            print(f"{REDTEXT}ERROR:{RESETTEXT} Try to enter a valid row & column seperated by a comma")
         
         try:
             if boardDisplay[row][col] == 'F':
                 print("Can't open a flagged cell!")
             elif board[row][col] == MINE:
-                print("you lost!")
                 displayNakedBoard()
+                for i in range(1,6):
+                    print(f"{REDTEXT}YOU HIT A MINE! YOU LOST!!!!!!{RESETTEXT}")
+                    time.sleep(0.2)
                 break
             else:
                 boardDisplay[row][col] = openAdjEmpyCell(row, col)
@@ -162,4 +176,5 @@ while complete:
                 complete = any(-1 in x for x in boardDisplay)
         except:
             pass
-print("Congratulations! you won!")
+if complete == False:
+    print("Congratulations! you won!")
