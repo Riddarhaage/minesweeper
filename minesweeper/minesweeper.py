@@ -8,25 +8,25 @@ def displayNakedBoard():
         0: " ",
         "F": "F"
     }
-    print("  ", end="") 
-    for col in range(0, 10):  # Print the column index
-        print(f"\033[4m {col} \033[0m", end="")
+    print("    ", end="") 
+    for col in range(0, len(board)):  # Print the column index
+        print(f"\033[4m {col:2}\033[0m", end="")
     print("") 
-    for row in range(0, 10):  # Print the row index
-        print(f"{row}|", end="")
-        for col in range(0, 10):
+    for row in range(0, len(board)):  # Print the row index
+        print(f"{row:4}|", end="")
+        for col in range(0, len(board)):
             symbol = value_symbol_map.get(board[row][col], " ")
             print(f"\033[4m{symbol}\033[0m", end="\033[4m" + " |" + "\033[0m")
         print("")
 
 def displayBoard():
-    print("  ", end="") 
-    for col in range(0, 10):  # Print the column index
-        print(f"\033[4m {col} \033[0m", end="")
+    print("    ", end="") 
+    for col in range(0, len(board)):  # Print the column index
+        print(f"\033[4m {col:2}\033[0m", end="")
     print("") 
-    for row in range(0, 10):  # Print the row index
-        print(f"{row}|", end="")
-        for col in range(0, 10):
+    for row in range(0, len(board)):  # Print the row index
+        print(f"{row:4}|", end="")
+        for col in range(0, len(board)):
             if boardDisplay[row][col] == HIDDENCELL:
                 print("\033[4m" + " " + "\033[0m", end="\033[4m" + " |" + "\033[0m")
             else:
@@ -38,10 +38,10 @@ def checkAdjCells(row,col):
     adjMines = 0
     r = row - 1
     while r <= row+1:
-        if r>=0 and r <10:
+        if r>=0 and r <len(board):
             c = col - 1
             while c <= col + 1:
-                if c>=0 and c<10:
+                if c>=0 and c<len(board):
                     adjMines += board[r][c] # 1 added to adjMines since mines = 1 on the board
                 c += 1
         r += 1
@@ -56,7 +56,7 @@ def openAdjEmpyCell(row, col):
         for offset in offsets:
             row = offset[0] + cell[0]
             col = offset[1] + cell[1]
-            if((row>=0 and row<=9) and (col>=0 and col<=9)):
+            if((row>=0 and row<=len(board)-1) and (col>=0 and col<=len(board)-1)):
                 if((boardDisplay[row][col]==HIDDENCELL) and (board[row][col]==EMPTY)):
                     boardDisplay[row][col] = checkAdjCells(row,col)
 
@@ -86,6 +86,16 @@ CYANTEXT = '\u001b[36m'
 RESETTEXT = '\u001b[0m'
         #row and cols 10x10 grid
         #not visible to user
+boardSize = int(input("How many rows do you want the board to be: "))
+if boardSize > 51:
+    boardSize = 51
+    print(f"MAX board size is {boardSize} rows and columns")
+if boardSize < 5:
+    boardSize = 5
+    print(f"Minimum board size in {boardSize} rows and columns")
+board = [[0 for _ in range(boardSize)] for _ in range(boardSize)]
+boardDisplay = [[-1 for _ in range(boardSize)] for _ in range(boardSize)]
+'''
 board = [
          [0,0,0,0,0,0,0,0,0,0],
          [0,0,0,0,0,0,0,0,0,0],
@@ -111,6 +121,7 @@ boardDisplay = [
          [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
          [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
                                         ]
+'''
 numOfMines = None
 while numOfMines == None:
     try:
@@ -159,22 +170,26 @@ while complete:
             col = int(splitCell[1])
         except:
             print(f"{REDTEXT}ERROR:{RESETTEXT} Try to enter a valid row & column seperated by a comma")
+    elif flag == 'exit':
+        break
         
-        try:
-            if boardDisplay[row][col] == 'F':
-                print("Can't open a flagged cell!")
-            elif board[row][col] == MINE:
-                displayNakedBoard()
-                for i in range(1,6):
-                    print(f"{REDTEXT}YOU HIT A MINE! YOU LOST!!!!!!{RESETTEXT}")
-                    time.sleep(0.2)
-                break
-            else:
-                boardDisplay[row][col] = openAdjEmpyCell(row, col)
-                boardDisplay[row][col] = checkAdjCells(row, col)
-                displayBoard()
-                complete = any(-1 in x for x in boardDisplay)
-        except:
-            pass
+    try:
+        if boardDisplay[row][col] == 'F':
+            print("Can't open a flagged cell!")
+        elif board[row][col] == MINE:
+            displayNakedBoard()
+            for i in range(1,6):
+                print(f"{REDTEXT}YOU HIT A MINE! YOU LOST!!!!!!{RESETTEXT}")
+                time.sleep(0.2)
+            break
+        else:
+            boardDisplay[row][col] = openAdjEmpyCell(row, col)
+            boardDisplay[row][col] = checkAdjCells(row, col)
+            displayBoard()
+            complete = any(-1 in x for x in boardDisplay)
+    except:
+        pass
 if complete == False:
-    print("Congratulations! you won!")
+    for i in range(1, 10):
+        print(f"{GREENTEXT}CONGR{CYANTEXT}ATULATIONS {REDTEXT}YOU {GREENTEXT} WON{CYANTEXT}!!!{REDTEXT}!!!{RESETTEXT}")
+        time.sleep(0.3)
