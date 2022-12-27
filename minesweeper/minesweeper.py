@@ -15,7 +15,7 @@ RESETTEXT = '\u001b[0m'
 
 def displayNakedBoard():
     value_symbol_map = {
-        1: "*",
+        1: "X",
         0: " ",
         "F": "F"
     }
