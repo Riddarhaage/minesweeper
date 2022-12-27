@@ -7,7 +7,7 @@ HIDDENCELL = -1
 EMPTY = 0
 REDTEXT = '\u001b[31m'
 GREENTEXT = '\u001b[32m'
-YELLOWTEXT = '\u001b[33m'
+#YELLOWTEXT = '\u001b[33m' Displays as regular white on windows
 BLUETEXT =  '\u001b[34m'
 MAGTEXT = '\u001b[35m'
 CYANTEXT = '\u001b[36m'
@@ -90,10 +90,10 @@ def setFlag(row, col):
 boardSize = int(input("How many rows and columns do u want: "))
 if boardSize > 51:
     boardSize = 51
-    print(f"MAX board size is {boardSize} rows and columns")
+    print(f"{CYANTEXT}MAX board size is {boardSize} rows and columns{RESETTEXT}")
 if boardSize < 5:
     boardSize = 5
-    print(f"Minimum board size in {boardSize} rows and columns")
+    print(f"{CYANTEXT}Minimum board size in {boardSize} rows and columns{RESETTEXT}")
 board = [[0 for _ in range(boardSize)] for _ in range(boardSize)]
 boardDisplay = [[-1 for _ in range(boardSize)] for _ in range(boardSize)]
 
@@ -103,12 +103,12 @@ while numOfMines == None:
         numOfMines = int(input("Amount of mines: "))
 
         if numOfMines == 0:
-            numOfMines = 1
-            print("not enought mines to make things interesting!")
+            numOfMines = 2
+            print(f"{CYANTEXT}not enought mines to make things interesting!{RESETTEXT}")
             print(f"{numOfMines} mines added to the board")
         if numOfMines > int(len(board)*len(board)*0.5):
             numOfMines = int(len(board)*len(board)*0.5)
-            print("Woah! that's way too many mines!")
+            print(f"{CYANTEXT}Woah! that's way too many mines!{RESETTEXT}")
             print(f"Luckily I only added {numOfMines} mines to the board!")
     except:
         print(f"{REDTEXT}ERROR:{RESETTEXT} not a valid input!")
@@ -144,25 +144,27 @@ while HiddenCellsLeft:
             col = int(splitCell[1])
         except:
             print(f"{REDTEXT}ERROR:{RESETTEXT} Try to enter a valid row & column seperated by a comma")
+
+        try:
+            if boardDisplay[row][col] == 'F':
+                print(f"{CYANTEXT}Can't open a flagged cell!{RESETTEXT}")
+            elif board[row][col] == MINE:
+                displayNakedBoard()
+                for i in range(1,6):
+                    print(f"{REDTEXT}YOU HIT A MINE! YOU LOST!!!!!!{RESETTEXT}")
+                    time.sleep(0.2)
+                break
+            else:
+                boardDisplay[row][col] = openAdjEmpyCell(row, col)
+                boardDisplay[row][col] = checkAdjCells(row, col)
+                displayBoard()
+                HiddenCellsLeft = any(-1 in x for x in boardDisplay)
+        except:
+            pass
     elif flag == 'exit':
         break
         
-    try:
-        if boardDisplay[row][col] == 'F':
-            print("Can't open a flagged cell!")
-        elif board[row][col] == MINE:
-            displayNakedBoard()
-            for i in range(1,6):
-                print(f"{REDTEXT}YOU HIT A MINE! YOU LOST!!!!!!{RESETTEXT}")
-                time.sleep(0.2)
-            break
-        else:
-            boardDisplay[row][col] = openAdjEmpyCell(row, col)
-            boardDisplay[row][col] = checkAdjCells(row, col)
-            displayBoard()
-            HiddenCellsLeft = any(-1 in x for x in boardDisplay)
-    except:
-        pass
+    
 if HiddenCellsLeft == False:
     for i in range(1, 10):
         print(f"{GREENTEXT}CONGR{CYANTEXT}ATULATIONS {REDTEXT}YOU {GREENTEXT} WON{CYANTEXT}!!!{REDTEXT}!!!{RESETTEXT}")
