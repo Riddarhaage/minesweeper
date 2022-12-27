@@ -2,6 +2,17 @@
 import random
 import time
 
+MINE = 1
+HIDDENCELL = -1
+EMPTY = 0
+REDTEXT = '\u001b[31m'
+GREENTEXT = '\u001b[32m'
+YELLOWTEXT = '\u001b[33m'
+BLUETEXT =  '\u001b[34m'
+MAGTEXT = '\u001b[35m'
+CYANTEXT = '\u001b[36m'
+RESETTEXT = '\u001b[0m'
+
 def displayNakedBoard():
     value_symbol_map = {
         1: "*",
@@ -18,6 +29,7 @@ def displayNakedBoard():
             symbol = value_symbol_map.get(board[row][col], " ")
             print(f"\033[4m{symbol}\033[0m", end="\033[4m" + " |" + "\033[0m")
         print("")
+
 
 def displayBoard():
     print("    ", end="") 
@@ -47,6 +59,7 @@ def checkAdjCells(row,col):
         r += 1
     return adjMines
 
+
 def openAdjEmpyCell(row, col):
     cells = [(row, col)]
     offsets = ((-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1))
@@ -65,6 +78,7 @@ def openAdjEmpyCell(row, col):
                     else:
                         boardDisplay[row][col] = checkAdjCells(row,col)
 
+
 def setFlag(row, col):
     if boardDisplay[row][col] == "F":
         boardDisplay[row][col] = HIDDENCELL
@@ -72,21 +86,8 @@ def setFlag(row, col):
     else:
         boardDisplay[row][col] = "F"
 
-    
 
-MINE = 1
-HIDDENCELL = -1
-EMPTY = 0
-REDTEXT = '\u001b[31m'
-GREENTEXT = '\u001b[32m'
-YELLOWTEXT = '\u001b[33m'
-BLUETEXT =  '\u001b[34m'
-MAGTEXT = '\u001b[35m'
-CYANTEXT = '\u001b[36m'
-RESETTEXT = '\u001b[0m'
-        #row and cols 10x10 grid
-        #not visible to user
-boardSize = int(input("How many rows do you want the board to be: "))
+boardSize = int(input("How many rows and columns do u want: "))
 if boardSize > 51:
     boardSize = 51
     print(f"MAX board size is {boardSize} rows and columns")
@@ -95,33 +96,7 @@ if boardSize < 5:
     print(f"Minimum board size in {boardSize} rows and columns")
 board = [[0 for _ in range(boardSize)] for _ in range(boardSize)]
 boardDisplay = [[-1 for _ in range(boardSize)] for _ in range(boardSize)]
-'''
-board = [
-         [0,0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0,0],
-         [0,0,0,0,0,0,0,0,0,0],
-                              ]
-        #same size grid that will be visible to the user
-boardDisplay = [
-         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-         [-1,-1,-1,-1,-1,-1,-1,-1,-1,-1],
-                                        ]
-'''
+
 numOfMines = None
 while numOfMines == None:
     try:
@@ -131,8 +106,8 @@ while numOfMines == None:
             numOfMines = 1
             print("not enought mines to make things interesting!")
             print(f"{numOfMines} mines added to the board")
-        if numOfMines > 75:
-            numOfMines = 75
+        if numOfMines > int(len(board)*len(board)*0.5):
+            numOfMines = int(len(board)*len(board)*0.5)
             print("Woah! that's way too many mines!")
             print(f"Luckily I only added {numOfMines} mines to the board!")
     except:
@@ -147,12 +122,11 @@ while mines < numOfMines:
     mines += 1
 
 
-displayNakedBoard()
+#displayNakedBoard() #Prints the location of all the Mines for testing purposes
 print("")
 displayBoard()
-
-complete = any(-1 in x for x in boardDisplay)
-while complete:
+HiddenCellsLeft = any(-1 in x for x in boardDisplay) #True
+while HiddenCellsLeft:
     flag = input("place/remove flag?(y/n): ").lower()
     if flag == 'y':
         cell = input("pick a cell:")
@@ -161,7 +135,7 @@ while complete:
         col = int(splitCell[1])
         setFlag(row,col)
         displayBoard()
-        complete = any(-1 in x for x in boardDisplay)
+        HiddenCellsLeft = any(-1 in x for x in boardDisplay)
     elif flag == 'n':
         try:
             cell = input("pick a cell:")
@@ -186,10 +160,10 @@ while complete:
             boardDisplay[row][col] = openAdjEmpyCell(row, col)
             boardDisplay[row][col] = checkAdjCells(row, col)
             displayBoard()
-            complete = any(-1 in x for x in boardDisplay)
+            HiddenCellsLeft = any(-1 in x for x in boardDisplay)
     except:
         pass
-if complete == False:
+if HiddenCellsLeft == False:
     for i in range(1, 10):
         print(f"{GREENTEXT}CONGR{CYANTEXT}ATULATIONS {REDTEXT}YOU {GREENTEXT} WON{CYANTEXT}!!!{REDTEXT}!!!{RESETTEXT}")
         time.sleep(0.3)
