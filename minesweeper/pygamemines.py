@@ -16,25 +16,28 @@ boardSize = 20
 width = boardSize*32 # the tiles are 32px in size
 height = boardSize*32
 
-font = pygame.font.Font('freesansbold.ttf', 18)
+font = pygame.font.SysFont('comicsansms', 20)
 pygame_icon = pygame.image.load("minesweeper\\img\\icon.png")
 pygame.display.set_icon(pygame_icon)
 screen = pygame.display.set_mode((width, height))
-screen.fill((125,125,125))
+#screen.fill((125,125,125))
+background_img = pygame.image.load("minesweeper\\img\\menu_background.png")
+screen.blit(background_img,(0,0))
 
 board = [[0 for _ in range(boardSize)] for _ in range(boardSize)]
 boardDisplay = [[-1 for _ in range(boardSize)] for _ in range(boardSize)]
 
 num_mines = 3
 mines_input = pygame.Rect(200, 280, 240, 32)
+text_box_outline = pygame.Rect(195, 275, 250, 42)
 # Set up the placeholder text for the input field
-placeholder_text = font.render("Enter number of mines", True, (0,0,0))
+placeholder_text = font.render("Enter number of mines", True, (255, 0, 248))
 placeholder_text_rect = placeholder_text.get_rect()
 placeholder_text_rect.center = mines_input.center
 
 # Set up the board size input box
 board_size_input = pygame.Rect(200, 280, 240, 32)
-board_size_ph_text = font.render("Enter Board Size", True, (0,0,0))
+board_size_ph_text = font.render("Enter Board Size", True, (255, 0, 248))
 board_size_ph_rect = board_size_ph_text.get_rect()
 board_size_ph_rect.center = board_size_input.center
 
@@ -89,16 +92,17 @@ while display_main_menu:
                 mines_text = ""  # Clear the input field if it's not focused
     
     # Render the input field's text
-    mines_input_text = font.render(mines_text, True,(0,0,0))
+    mines_input_text = font.render(mines_text, True,(255, 0, 248))
     mines_input_text_rect = mines_input_text.get_rect()
     mines_input_text_rect.center = mines_input.center
     
     # Clear the screen
-    screen.fill((125,125,125))
+    #screen.fill((125,125,125))
+    screen.blit(background_img,(0,0))
     
     # Draw the input field and text
-    
-    pygame.draw.rect(screen, (90,95,255), mines_input)
+    pygame.draw.rect(screen, (0,0,0), text_box_outline, border_radius=4)
+    pygame.draw.rect(screen, (255,255,255), mines_input, border_radius=4)
     if mines_input_focused:
         screen.blit(mines_input_text, mines_input_text_rect)
     else:
@@ -149,15 +153,17 @@ while display_size_menu:
                 board_size_text = ""  # Clear the input field if it's not focused
     
     # Render the input field's text
-    board_size_input_text = font.render(board_size_text, True,(0,0,0))
+    board_size_input_text = font.render(board_size_text, True,(255, 0, 248))
     board_size_input_text_rect = board_size_input_text.get_rect()
     board_size_input_text_rect.center = board_size_input.center
     
     # Clear the screen
-    screen.fill((125,125,125))
+    #screen.fill((125,125,125))
+    screen.blit(background_img,(0,0))
     
     # Draw the input field and text
-    pygame.draw.rect(screen, (90,95,255), board_size_input)
+    pygame.draw.rect(screen, (0,0,0), text_box_outline, border_radius=4)
+    pygame.draw.rect(screen, (255,255,255), board_size_input, border_radius=4)
     if board_size_input_focused:
         screen.blit(board_size_input_text, board_size_input_text_rect)
     else:
