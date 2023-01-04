@@ -4,9 +4,6 @@ import random
 from collections import Counter
 
 pygame.init()
-# Create a window with the specified dimensions
-
-
 # Set the caption of the window
 pygame.display.set_caption("Minesweeper av Ruben Riddarhaage")
 
@@ -19,14 +16,138 @@ boardSize = 20
 width = boardSize*32 # the tiles are 32px in size
 height = boardSize*32
 
+font = pygame.font.Font('freesansbold.ttf', 18)
 pygame_icon = pygame.image.load("minesweeper\\img\\icon.png")
 pygame.display.set_icon(pygame_icon)
 screen = pygame.display.set_mode((width, height))
+screen.fill((125,125,125))
 
 board = [[0 for _ in range(boardSize)] for _ in range(boardSize)]
 boardDisplay = [[-1 for _ in range(boardSize)] for _ in range(boardSize)]
 
-num_mines = 50
+num_mines = 3
+mines_input = pygame.Rect(200, 200, 240, 32)
+# Set up the placeholder text for the input field
+placeholder_text = font.render("Enter number of mines", True, (0,0,0))
+placeholder_text_rect = placeholder_text.get_rect()
+placeholder_text_rect.center = mines_input.center
+
+# Set up the board size input box
+board_size_input = pygame.Rect(200, 280, 240, 32)
+board_size_ph_text = font.render("Enter Board Size", True, (0,0,0))
+board_size_ph_rect = board_size_ph_text.get_rect()
+board_size_ph_rect.center = board_size_input.center
+
+# Set up the text input fields for the number of mines and board size
+mines_text = ""
+board_size_text = ""
+
+# Set up a flag to track whether the input field is focused
+mines_input_focused = False
+board_size_input_focused = False
+# Set up a flag to track whether the main menu is being displayed
+display_main_menu = True
+while display_main_menu:
+    # Update the num_mines variable based on the user's input
+    try:
+        num_mines = int(mines_text)
+        boardSize = int(board_size_text)
+    except ValueError:
+        num_mines = 15
+        boardSize = 10
+    
+    # Check for events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Check if the user clicked on the input field
+            if mines_input.collidepoint(event.pos):
+                mines_input_focused = True
+            else:
+                mines_input_focused = False
+
+            if board_size_input.collidepoint(event.pos):
+                board_size_input_focused = True
+            else:
+                board_size_input_focused = False
+        if event.type == pygame.KEYDOWN:
+            # Update the input field's text if it's focused
+            if mines_input_focused:
+                if event.key == pygame.K_BACKSPACE:
+                    mines_text = mines_text[:-1]
+                if event.key == pygame.K_RETURN:
+                    # Try to convert the value of mines_text to an integer
+                    # and update num_mines with it
+                    try:
+                        num_mines = int(mines_text) if mines_text.isdigit() else num_mines
+
+                        # You can also add a check here to make sure that num_mines
+                        # is within a valid range (e.g. 1 <= num_mines <= boardSize**2)
+                        display_main_menu = False
+                    except ValueError:
+                        # If the conversion fails, set num_mines to a default value
+                        # or display an error message to the user
+                        num_mines = 15
+                        display_main_menu = False
+                else:
+                    mines_text += event.unicode
+            else:
+                mines_text = ""  # Clear the input field if it's not focused
+            if board_size_input_focused:
+                if event.key == pygame.K_BACKSPACE:
+                    board_size_text = board_size_text[:-1]
+                if event.key == pygame.K_RETURN:
+                    # Try to convert the value of mines_text to an integer
+                    # and update num_mines with it
+                    try:
+                        boardSize = int(board_size_text) if board_size_text.isdigit() else boardSize
+
+                        # You can also add a check here to make sure that num_mines
+                        # is within a valid range (e.g. 1 <= num_mines <= boardSize**2)
+                        display_main_menu = False
+                    except ValueError:
+                        # If the conversion fails, set num_mines to a default value
+                        # or display an error message to the user
+                        boardSize = 10
+                        display_main_menu = False
+                else:
+                    board_size_text += event.unicode
+            else:
+                board_size_text = ""  # Clear the input field if it's not focused
+    
+    # Render the input field's text
+    mines_input_text = font.render(mines_text, True,(0,0,0))
+    mines_input_text_rect = mines_input_text.get_rect()
+    mines_input_text_rect.center = mines_input.center
+
+    board_size_input_text = font.render(board_size_text, True,(0,0,0))
+    board_size_input_text_rect = board_size_input_text.get_rect()
+    board_size_input_text_rect.center = board_size_input.center
+    
+    # Clear the screen
+    screen.fill((125,125,125))
+    
+    # Draw the input field and text
+    
+    pygame.draw.rect(screen, (90,95,255), mines_input)
+    if mines_input_focused:
+        screen.blit(mines_input_text, mines_input_text_rect)
+    else:
+        screen.blit(placeholder_text, placeholder_text_rect)
+
+    pygame.draw.rect(screen, (90,95,255), board_size_input)
+    if board_size_input_focused:
+        screen.blit(board_size_input_text, board_size_input_text_rect)
+    else:
+        screen.blit(board_size_ph_text, board_size_ph_rect)
+    # Update the display
+    pygame.display.flip()
+width = boardSize*32 # the tiles are 32px in size
+height = boardSize*32
+screen = pygame.display.set_mode((width, height))
+board = [[0 for _ in range(boardSize)] for _ in range(boardSize)]
+boardDisplay = [[-1 for _ in range(boardSize)] for _ in range(boardSize)]
 
 for i in range(num_mines):
     row = random.randint(0, len(board) - 1)
@@ -126,8 +247,9 @@ def openAdjEmpyCell(row, col):
 
 hiddenCellCount = Counter(c for clist in boardDisplay for c in clist)
 
-running = True
-while running:
+
+PlayGame = True
+while PlayGame:
     #hiddenCellCount = Counter(c for clist in boardDisplay for c in clist)
     #if hiddenCellCount[-1] == num_mines:
      #   print("YOU WON!")
