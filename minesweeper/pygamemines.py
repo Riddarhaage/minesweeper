@@ -26,7 +26,7 @@ board = [[0 for _ in range(boardSize)] for _ in range(boardSize)]
 boardDisplay = [[-1 for _ in range(boardSize)] for _ in range(boardSize)]
 
 num_mines = 3
-mines_input = pygame.Rect(200, 200, 240, 32)
+mines_input = pygame.Rect(200, 280, 240, 32)
 # Set up the placeholder text for the input field
 placeholder_text = font.render("Enter number of mines", True, (0,0,0))
 placeholder_text_rect = placeholder_text.get_rect()
@@ -51,10 +51,8 @@ while display_main_menu:
     # Update the num_mines variable based on the user's input
     try:
         num_mines = int(mines_text)
-        boardSize = int(board_size_text)
     except ValueError:
         num_mines = 15
-        boardSize = 10
     
     # Check for events
     for event in pygame.event.get():
@@ -66,11 +64,6 @@ while display_main_menu:
                 mines_input_focused = True
             else:
                 mines_input_focused = False
-
-            if board_size_input.collidepoint(event.pos):
-                board_size_input_focused = True
-            else:
-                board_size_input_focused = False
         if event.type == pygame.KEYDOWN:
             # Update the input field's text if it's focused
             if mines_input_focused:
@@ -94,36 +87,11 @@ while display_main_menu:
                     mines_text += event.unicode
             else:
                 mines_text = ""  # Clear the input field if it's not focused
-            if board_size_input_focused:
-                if event.key == pygame.K_BACKSPACE:
-                    board_size_text = board_size_text[:-1]
-                if event.key == pygame.K_RETURN:
-                    # Try to convert the value of mines_text to an integer
-                    # and update num_mines with it
-                    try:
-                        boardSize = int(board_size_text) if board_size_text.isdigit() else boardSize
-
-                        # You can also add a check here to make sure that num_mines
-                        # is within a valid range (e.g. 1 <= num_mines <= boardSize**2)
-                        display_main_menu = False
-                    except ValueError:
-                        # If the conversion fails, set num_mines to a default value
-                        # or display an error message to the user
-                        boardSize = 10
-                        display_main_menu = False
-                else:
-                    board_size_text += event.unicode
-            else:
-                board_size_text = ""  # Clear the input field if it's not focused
     
     # Render the input field's text
     mines_input_text = font.render(mines_text, True,(0,0,0))
     mines_input_text_rect = mines_input_text.get_rect()
     mines_input_text_rect.center = mines_input.center
-
-    board_size_input_text = font.render(board_size_text, True,(0,0,0))
-    board_size_input_text_rect = board_size_input_text.get_rect()
-    board_size_input_text_rect.center = board_size_input.center
     
     # Clear the screen
     screen.fill((125,125,125))
@@ -135,7 +103,60 @@ while display_main_menu:
         screen.blit(mines_input_text, mines_input_text_rect)
     else:
         screen.blit(placeholder_text, placeholder_text_rect)
+    # Update the display
+    pygame.display.flip()
 
+display_size_menu = True
+while display_size_menu:
+    # Update the num_mines variable based on the user's input
+    try:
+        boardSize = int(board_size_text)
+    except ValueError:
+        boardSize = 20
+    
+    # Check for events
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Check if the user clicked on the input field
+            if board_size_input.collidepoint(event.pos):
+                board_size_input_focused = True
+            else:
+                board_size_input_focused = False
+        if event.type == pygame.KEYDOWN:
+            # Update the input field's text if it's focused
+            if board_size_input_focused:
+                if event.key == pygame.K_BACKSPACE:
+                    board_size_text = board_size_text[:-1]
+                if event.key == pygame.K_RETURN:
+                    # Try to convert the value of mines_text to an integer
+                    # and update num_mines with it
+                    try:
+                        boardSize = int(board_size_text) if board_size_text.isdigit() else boardSize
+
+                        # You can also add a check here to make sure that num_mines
+                        # is within a valid range (e.g. 1 <= num_mines <= boardSize**2)
+                        display_size_menu = False
+                    except ValueError:
+                        # If the conversion fails, set num_mines to a default value
+                        # or display an error message to the user
+                        boardSize = 10
+                        display_size_menu = False
+                else:
+                    board_size_text += event.unicode
+            else:
+                board_size_text = ""  # Clear the input field if it's not focused
+    
+    # Render the input field's text
+    board_size_input_text = font.render(board_size_text, True,(0,0,0))
+    board_size_input_text_rect = board_size_input_text.get_rect()
+    board_size_input_text_rect.center = board_size_input.center
+    
+    # Clear the screen
+    screen.fill((125,125,125))
+    
+    # Draw the input field and text
     pygame.draw.rect(screen, (90,95,255), board_size_input)
     if board_size_input_focused:
         screen.blit(board_size_input_text, board_size_input_text_rect)
@@ -143,6 +164,8 @@ while display_main_menu:
         screen.blit(board_size_ph_text, board_size_ph_rect)
     # Update the display
     pygame.display.flip()
+
+
 width = boardSize*32 # the tiles are 32px in size
 height = boardSize*32
 screen = pygame.display.set_mode((width, height))
