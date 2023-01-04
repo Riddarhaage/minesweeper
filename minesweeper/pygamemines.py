@@ -72,7 +72,7 @@ while display_main_menu:
             if mines_input_focused:
                 if event.key == pygame.K_BACKSPACE:
                     mines_text = mines_text[:-1]
-                if event.key == pygame.K_RETURN:
+                elif event.key == pygame.K_RETURN:
                     # Try to convert the value of mines_text to an integer
                     # and update num_mines with it
                     try:
@@ -133,7 +133,7 @@ while display_size_menu:
             if board_size_input_focused:
                 if event.key == pygame.K_BACKSPACE:
                     board_size_text = board_size_text[:-1]
-                if event.key == pygame.K_RETURN:
+                elif event.key == pygame.K_RETURN:
                     # Try to convert the value of mines_text to an integer
                     # and update num_mines with it
                     try:
