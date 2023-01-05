@@ -12,6 +12,8 @@ HIDDENCELL = -1
 EMPTY = 0
 FLAG = 'F'
 
+num_empty_cells = 0
+
 boardSize = 20
 width = boardSize*32 # the tiles are 32px in size
 height = boardSize*32
@@ -178,7 +180,8 @@ screen = pygame.display.set_mode((width, height))
 board = [[0 for _ in range(boardSize)] for _ in range(boardSize)]
 boardDisplay = [[-1 for _ in range(boardSize)] for _ in range(boardSize)]
 
-for i in range(num_mines):
+#Place mines in random cells
+for _ in range(num_mines):
     row = random.randint(0, len(board) - 1)
     col = random.randint(0, len(board[0]) - 1)
     board[row][col] = MINE 
@@ -254,6 +257,7 @@ def checkAdjCells(row,col):
 
 
 def openAdjEmpyCell(row, col):
+    global num_empty_cells
     cells = [(row, col)]
     offsets = ((-1,-1),(-1,0),(-1,1),(0,1),(1,1),(1,0),(1,-1),(0,-1))
         
@@ -268,20 +272,20 @@ def openAdjEmpyCell(row, col):
 
                     if checkAdjCells(row,col) == EMPTY and (row,col) not in cells:
                         cells.append((row,col))
+                        num_empty_cells += 1
                     else:
                         boardDisplay[row][col] = checkAdjCells(row,col)
+                        num_empty_cells += 1
 
 
-
-
-hiddenCellCount = Counter(c for clist in boardDisplay for c in clist)
-
+total_empty_cells = boardSize**2 - num_mines
 
 PlayGame = True
 while PlayGame:
-    #hiddenCellCount = Counter(c for clist in boardDisplay for c in clist)
-    #if hiddenCellCount[-1] == num_mines:
-     #   print("YOU WON!")
+    if num_empty_cells == total_empty_cells:
+        print("you won!")
+        pygame.time.wait(3000)
+        break
     # Pump and handle event
     pygame.event.pump()
     for event in pygame.event.get():
@@ -312,7 +316,10 @@ while PlayGame:
                 
                 else:
                     # Open the cell and display the number of adjacent mines
+                    if boardDisplay[row][col] == HIDDENCELL:
+                        num_empty_cells += 1
                     boardDisplay[row][col] = board[row][col]
+                    print(num_empty_cells)
                     
                 if board[row][col] == EMPTY and boardDisplay[row][col] != FLAG:
                     # Open adjacent empty cells
