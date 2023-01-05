@@ -328,7 +328,7 @@ while PlayGame:
                 # Flag the cell
                 if boardDisplay[row][col] == FLAG:
                     boardDisplay[row][col] = HIDDENCELL
-                else:
+                elif boardDisplay[row][col] == HIDDENCELL:
                     boardDisplay[row][col] = FLAG
             # Redraw the board
             draw(board, boardDisplay)
